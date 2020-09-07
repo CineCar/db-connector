@@ -11,8 +11,8 @@ export class DatabaseConnectorImplementation implements DatabaseConnector {
         return DatabaseObjectStrategyFactory.create(type).update(object);
     }
 
-    public delete(object: object, type: DatabaseObjectType): void {
-        return DatabaseObjectStrategyFactory.create(type).delete(object);
+    public delete(id: number, type: DatabaseObjectType): Promise<void> {
+        return DatabaseObjectStrategyFactory.create(type).delete(id);
     }
 
     public get(id: number, type: DatabaseObjectType): Promise<object> {

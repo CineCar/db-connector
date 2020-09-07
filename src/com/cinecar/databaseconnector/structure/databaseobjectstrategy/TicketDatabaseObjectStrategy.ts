@@ -9,7 +9,7 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
         throw new Error("Method not implemented.");
     }
 
-    public delete(object: object): void {
+    public delete(id: number): Promise<void> {
         throw new Error("Method not implemented.");
     }
 
