@@ -39,7 +39,7 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
     public get(id: number): Promise<object> {
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("SELECT id, name, duration FROM movie WHERE id = ?", [id], async (err, res, fields) => {
+            ConnectionSingleton.getConnection().query("SELECT id, name, duration FROM movie WHERE id = ?", [id], (err, res, fields) => {
                 if (err || res.length == 0) reject(err);
                 else {
                     const movie: Movie = new Movie();
@@ -47,7 +47,7 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
                     movie.setName(res[0].name);
                     movie.setDuration(res[0].duration);
 
-                    await ConnectionSingleton.getConnection().query("SELECT id, datetime FROM movieScreening WHERE movieId = ?", [id], (err, res, fields) => {
+                    ConnectionSingleton.getConnection().query("SELECT id, datetime FROM movieScreening WHERE movieId = ?", [id], (err, res, fields) => {
                         if (err) reject(err);
                         else {
                             const movieScreenings: Array<MovieScreening> = [];
@@ -62,10 +62,9 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
                             });
 
                             movie.setMovieScreenings(movieScreenings);
+                            resolve(movie);
                         }
                     });
-
-                    resolve(movie);
                 }
             });
         });
