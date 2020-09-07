@@ -7,17 +7,18 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
         const booking: Booking = <Booking>object;
 
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("INSERT INTO booking (personId, cancelled) VALUES(?, ?)", [booking.getPerson().getId(), booking.isCancelled()], (err, res, fields) => {
+            ConnectionSingleton.getConnection().query("INSERT INTO booking (personId, cancelled) VALUES(?, ?)", [booking.getPerson().getId(), booking.isCancelled()], async (err, res, fields) => {
                 if (err) reject(err);
                 else {
                     if (booking.getTickets() != null) {
-                        booking.getTickets().forEach((ticket) => {
-                            ConnectionSingleton.getConnection().query("INSERT INTO ticket_to_cart (ticketId, bookingId) VALUES(?, ?)", [ticket.getId(), booking.getId()], (err, res, fields) => {
+                        await booking.getTickets().forEach(async (ticket) => {
+                            await ConnectionSingleton.getConnection().query("UPDATE ticket SET bookingId = ? WHERE id = ?", [booking.getId(), ticket.getId()], (err, res, fields) => {
                                 if (err) reject();
-                                else resolve(booking);
                             });
                         });
-                    } else resolve(booking);
+                    }
+
+                    resolve(booking);
                 }
             });
         });
