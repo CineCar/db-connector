@@ -21,7 +21,7 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
         const movie: Movie = <Movie>object;
 
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("UPDATE FROM movie SET name = ??, duration = ? WHERE id = ?", [movie.getName(), movie.getDuration(), movie.getId()], (err, res, fields) => {
+            ConnectionSingleton.getConnection().query("UPDATE movie SET name = ??, duration = ? WHERE id = ?", [movie.getName(), movie.getDuration(), movie.getId()], (err, res, fields) => {
                 if (err) reject(err);
                 else resolve(movie);
             });
