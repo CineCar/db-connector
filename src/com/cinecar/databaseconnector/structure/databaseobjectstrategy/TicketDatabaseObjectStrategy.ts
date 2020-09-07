@@ -58,7 +58,7 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
                     ticket.setBooking(booking);
 
                     const movieScreening: MovieScreening = new MovieScreening();
-                    movieScreening.setDatetime(row.datetime);
+                    movieScreening.setDatetime(new Date(row.datetime));
                     movieScreening.setId(row.movieScreeningId);
 
                     const movie: Movie = new Movie();
@@ -98,7 +98,7 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
                         ticket.setBooking(booking);
 
                         const movieScreening: MovieScreening = new MovieScreening();
-                        movieScreening.setDatetime(row.datetime);
+                        movieScreening.setDatetime(new Date(row.datetime));
                         movieScreening.setId(row.movieScreeningId);
 
                         const movie: Movie = new Movie();

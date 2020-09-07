@@ -71,7 +71,7 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
                                 movie.setName(row.name);
 
                                 movieScreening.setMovie(movie);
-                                movieScreening.setDatetime(row.datetime);
+                                movieScreening.setDatetime(new Date(row.datetime));
                                 movieScreening.setId(row.movieScreeningId);
 
                                 ticket.setMovieScreening(movieScreening);
@@ -124,7 +124,7 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
                                     movie.setName(row.name);
 
                                     movieScreening.setMovie(movie);
-                                    movieScreening.setDatetime(row.datetime);
+                                    movieScreening.setDatetime(new Date(row.datetime));
                                     movieScreening.setId(row.movieScreeningId);
 
                                     ticket.setMovieScreening(movieScreening);
