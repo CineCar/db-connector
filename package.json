@@ -6,7 +6,8 @@
     "types": "dist/src/index.d.ts",
     "scripts": {
         "test": "tsc && MYSQL_HOST=mixify.ga MYSQL_USER=cinecar MYSQL_PASSWORD=KnDzrbNfmhyngCFh MYSQL_DATABASE=cinecar node --trace-warnings dist/test/index.js",
-        "build": "tsc"
+        "build": "tsc",
+        "postinstall": "tsc"
     },
     "repository": {
         "type": "git",
