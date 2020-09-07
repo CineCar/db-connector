@@ -1,7 +1,7 @@
 import { DatabaseConnectorImplementation, DatabaseObjectType } from "../../../../src/index";
 import { Movie } from "com.cinecar.objects";
 
-const databaseConnector = new DatabaseConnectorImplementation();
+const databaseConnector = DatabaseConnectorImplementation.getSingleton();
 
 async function test() {
     const movie = await databaseConnector.get(1, DatabaseObjectType.Movie);

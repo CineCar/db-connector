@@ -3,6 +3,16 @@ import { DatabaseObjectType } from "../structure/DatabaseObjectType";
 import { DatabaseObjectStrategyFactory } from "../structure/DatabaseObjectStrategyFactory";
 
 export class DatabaseConnectorImplementation implements DatabaseConnector {
+    private static databaseConnector: DatabaseConnector;
+
+    public static getSingleton(): DatabaseConnector {
+        if (DatabaseConnectorImplementation.databaseConnector == null) {
+            DatabaseConnectorImplementation.databaseConnector = new DatabaseConnectorImplementation();
+        }
+
+        return DatabaseConnectorImplementation.databaseConnector;
+    }
+
     public create(object: object, type: DatabaseObjectType): Promise<object> {
         return DatabaseObjectStrategyFactory.create(type).create(object);
     }
