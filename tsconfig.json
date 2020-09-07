@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "target": "es2020",
+        "module": "CommonJS",
+        "outDir": "dist",
+        "sourceMap": true,
+        "moduleResolution": "node"
+    },
+    "include": ["src", "test"],
+    "exclude": ["node_modules", ".vscode", "dist"]
+}
