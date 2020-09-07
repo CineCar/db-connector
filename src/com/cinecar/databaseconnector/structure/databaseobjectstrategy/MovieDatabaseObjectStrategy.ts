@@ -83,6 +83,7 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
                         movie.setId(row.id);
                         movie.setName(row.name);
+                        movie.setDuration(row.duration);
 
                         movies.push(movie);
 
