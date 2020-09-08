@@ -62,7 +62,7 @@ export class MovieScreeningDatabaseObjectStrategy implements DatabaseObjectStrat
     public getAll(): Promise<object[]> {
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query("SELECT ms.id AS id, datetime, movieId, name, duration FROM movieScreening ms INNER JOIN movie m ON ms.movieId = m.id", (err, res, fields) => {
-                if (err || res.length == 0) reject(err);
+                if (err) reject(err);
                 else {
                     const movieScreenings: Array<MovieScreening> = [];
 
