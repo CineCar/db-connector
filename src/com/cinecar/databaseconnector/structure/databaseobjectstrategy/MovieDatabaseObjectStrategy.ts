@@ -70,42 +70,53 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
         });
     }
 
-    public getAll(): Promise<object[]> {
-        return new Promise(async (resolve, reject) => {
-            await ConnectionSingleton.getConnection().query("SELECT id, name, duration FROM movie", async (err, res, fields) => {
+    public async getAll(): Promise<object[]> {
+        const movies: Array<Movie> = [];
+
+        return new Promise((resolve, reject) => {
+            ConnectionSingleton.getConnection().query("SELECT id, name, duration FROM movie", (err, res, fields) => {
                 if (err) reject(err);
                 else {
-                    const movies: Array<Movie> = [];
+                    const promises: Array<Promise<Movie>> = [];
 
-                    await res.forEach(async (row) => {
-                        const movie: Movie = new Movie();
+                    res.forEach((row) => {
+                        promises.push(
+                            new Promise((resolve, reject) => {
+                                const movie: Movie = new Movie();
 
-                        movie.setId(row.id);
-                        movie.setName(row.name);
-                        movie.setDuration(row.duration);
+                                movie.setId(row.id);
+                                movie.setName(row.name);
+                                movie.setDuration(row.duration);
 
-                        movies.push(movie);
+                                ConnectionSingleton.getConnection().query("SELECT id, datetime FROM movieScreening WHERE movieId = ?", [movie.getId()], (err, res, fields) => {
+                                    if (err) reject(err);
+                                    else {
+                                        const movieScreenings: Array<MovieScreening> = [];
 
-                        await ConnectionSingleton.getConnection().query("SELECT id, datetime FROM movieScreening WHERE movieId = ?", [movie.getId()], (err, res, fields) => {
-                            if (err) reject(err);
-                            else {
-                                const movieScreenings: Array<MovieScreening> = [];
+                                        res.forEach((row) => {
+                                            const movieScreening = new MovieScreening();
+                                            movieScreening.setId(row.id);
+                                            movieScreening.setDatetime(new Date(row.datetime));
+                                            movieScreening.setMovie(movie);
 
-                                res.forEach((row) => {
-                                    const movieScreening = new MovieScreening();
-                                    movieScreening.setId(row.id);
-                                    movieScreening.setDatetime(new Date(row.datetime));
-                                    movieScreening.setMovie(movie);
+                                            movieScreenings.push(movieScreening);
+                                        });
 
-                                    movieScreenings.push(movieScreening);
+                                        movie.setMovieScreenings(movieScreenings);
+                                        resolve(movie);
+                                    }
                                 });
-
-                                movie.setMovieScreenings(movieScreenings);
-                            }
-                        });
+                            })
+                        );
                     });
 
-                    resolve(movies);
+                    Promise.all(promises)
+                        .then((movies: Array<Movie>) => {
+                            resolve(movies);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 }
             });
         });

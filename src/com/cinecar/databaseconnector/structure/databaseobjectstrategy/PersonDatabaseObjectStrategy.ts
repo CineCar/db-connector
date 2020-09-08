@@ -55,7 +55,7 @@ export class PersonDatabaseObjectStrategy implements DatabaseObjectStrategy {
     public getAll(): Promise<object[]> {
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query("SELECT id, firstname, lastname FROM person", (err, res, fields) => {
-                if (err || res.length == 0) reject(err);
+                if (err) reject(err);
                 else {
                     const persons: Array<Person> = [];
 

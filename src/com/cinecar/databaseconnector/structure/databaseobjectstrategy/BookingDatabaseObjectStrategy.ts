@@ -90,56 +90,67 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
     }
 
     public getAll(): Promise<object[]> {
-        return new Promise(async (resolve, reject) => {
-            await ConnectionSingleton.getConnection().query("SELECT id, cancelled, personId, firstname, lastname FROM booking b INNER JOIN person p ON b.personId = p.id", async (err, res, fields) => {
+        return new Promise((resolve, reject) => {
+            ConnectionSingleton.getConnection().query("SELECT id, cancelled, personId, firstname, lastname FROM booking b INNER JOIN person p ON b.personId = p.id", (err, res, fields) => {
                 if (err) reject(err);
                 else {
-                    const bookings: Array<Booking> = [];
+                    const promises: Array<Promise<Booking>> = [];
 
-                    await res.forEach(async (row) => {
-                        const booking: Booking = new Booking();
+                    res.forEach((row) => {
+                        promises.push(
+                            new Promise((resolve, reject) => {
+                                const booking: Booking = new Booking();
 
-                        booking.setCancelled(row.cancelled);
+                                booking.setCancelled(row.cancelled);
 
-                        const person = new Person();
-                        person.setFirstname(row.firstname);
-                        person.setLastname(row.lastname);
-                        booking.setPerson(person);
+                                const person = new Person();
+                                person.setFirstname(row.firstname);
+                                person.setLastname(row.lastname);
+                                booking.setPerson(person);
 
-                        await ConnectionSingleton.getConnection().query("SELECT id, row, movieScreeningId, movieId, datetime, name, duration FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id WHERE t.bookingId = ?", [booking.getId()], (err, res, fields) => {
-                            if (err) reject();
-                            else {
-                                const tickets: Array<Ticket> = [];
-                                res.forEach((row) => {
-                                    const ticket: Ticket = new Ticket();
+                                ConnectionSingleton.getConnection().query("SELECT id, row, movieScreeningId, movieId, datetime, name, duration FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id WHERE t.bookingId = ?", [booking.getId()], (err, res, fields) => {
+                                    if (err) reject();
+                                    else {
+                                        const tickets: Array<Ticket> = [];
 
-                                    ticket.setId(row.id);
-                                    ticket.setBooking(booking);
-                                    ticket.setRow(row.row);
-                                    const movieScreening: MovieScreening = new MovieScreening();
-                                    const movie: Movie = new Movie();
+                                        res.forEach((row) => {
+                                            const ticket: Ticket = new Ticket();
 
-                                    movie.setId(row.movieId);
-                                    movie.setDuration(row.duration);
-                                    movie.setName(row.name);
+                                            ticket.setId(row.id);
+                                            ticket.setBooking(booking);
+                                            ticket.setRow(row.row);
+                                            const movieScreening: MovieScreening = new MovieScreening();
+                                            const movie: Movie = new Movie();
 
-                                    movieScreening.setMovie(movie);
-                                    movieScreening.setDatetime(new Date(row.datetime));
-                                    movieScreening.setId(row.movieScreeningId);
+                                            movie.setId(row.movieId);
+                                            movie.setDuration(row.duration);
+                                            movie.setName(row.name);
 
-                                    ticket.setMovieScreening(movieScreening);
+                                            movieScreening.setMovie(movie);
+                                            movieScreening.setDatetime(new Date(row.datetime));
+                                            movieScreening.setId(row.movieScreeningId);
 
-                                    tickets.push(ticket);
+                                            ticket.setMovieScreening(movieScreening);
+
+                                            tickets.push(ticket);
+                                        });
+
+                                        booking.setTickets(tickets);
+
+                                        resolve(booking);
+                                    }
                                 });
-
-                                booking.setTickets(tickets);
-                            }
-                        });
-
-                        bookings.push(booking);
+                            })
+                        );
                     });
 
-                    resolve(bookings);
+                    Promise.all(promises)
+                        .then((bookings: Array<Booking>) => {
+                            resolve(bookings);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 }
             });
         });
