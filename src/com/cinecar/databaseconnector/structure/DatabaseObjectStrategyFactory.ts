@@ -6,6 +6,8 @@ import { CartDatabaseObjectStrategy } from "./databaseobjectstrategy/CartDatabas
 import { BookingDatabaseObjectStrategy } from "./databaseobjectstrategy/BookingDatabaseObjectStrategy";
 import { TicketDatabaseObjectStrategy } from "./databaseobjectstrategy/TicketDatabaseObjectStrategy";
 import { MovieScreeningDatabaseObjectStrategy } from "./databaseobjectstrategy/MovieScreeningDatabaseObjectStrategy";
+import { UserDatabaseObjectStrategy } from "./databaseobjectstrategy/UserDatabaseObjectStrategy";
+import { SessionDatabaseObjectStrategy } from "./databaseobjectstrategy/SessionDatabaseObjectStrategy";
 
 export abstract class DatabaseObjectStrategyFactory {
     static create(type: DatabaseObjectType): DatabaseObjectStrategy {
@@ -29,6 +31,12 @@ export abstract class DatabaseObjectStrategyFactory {
                 break;
             case DatabaseObjectType.Ticket:
                 databaseObjectStrategy = new TicketDatabaseObjectStrategy();
+                break;
+            case DatabaseObjectType.User:
+                databaseObjectStrategy = new UserDatabaseObjectStrategy();
+                break;
+            case DatabaseObjectType.Session:
+                databaseObjectStrategy = new SessionDatabaseObjectStrategy();
                 break;
         }
 
