@@ -5,4 +5,6 @@ export enum DatabaseObjectType {
     Ticket,
     Booking,
     MovieScreening,
+    User,
+    Session,
 }
