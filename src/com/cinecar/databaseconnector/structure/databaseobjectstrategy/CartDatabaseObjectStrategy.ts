@@ -108,6 +108,7 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
                                         ticket.setId(row.id);
                                         ticket.setRow(row.row);
+                                        ticket.setMovieScreening(movieScreening);
 
                                         tickets.push(ticket);
                                     });
