@@ -1,7 +1,7 @@
 import { DatabaseConnectorImplementation, DatabaseObjectType } from "../../../../src/index";
 import { Movie, MovieScreening, Ticket } from "com.cinecar.objects";
 
-async function test() {
+function test() {
     const movieScreening = new MovieScreening();
 
     const ticket: Ticket = new Ticket();

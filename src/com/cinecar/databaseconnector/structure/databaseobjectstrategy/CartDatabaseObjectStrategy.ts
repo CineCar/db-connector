@@ -22,17 +22,26 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
         return new Promise((resolve, reject) => {
             if (cart.getTickets() != null) {
-                cart.getTickets().forEach(async (ticket) => {
-                    await ConnectionSingleton.getConnection().query(
-                        "INSERT INTO ticket_to_cart (ticketId, cartId)",
-                        [ticket.getId(), cart.getId()],
-                        (err, res, fields) => {
-                            if (err) reject(err);
-                        }
+                const promises: Array<Promise<void>> = [];
+
+                cart.getTickets().forEach((ticket) => {
+                    promises.push(
+                        new Promise((resolve, reject) => {
+                            ConnectionSingleton.getConnection().query(
+                                "INSERT INTO ticket_to_cart (ticketId, cartId)",
+                                [ticket.getId(), cart.getId()],
+                                (err, res, fields) => {
+                                    if (err) reject(err);
+                                    else resolve();
+                                }
+                            );
+                        })
                     );
                 });
 
-                resolve(cart);
+                Promise.all(promises).then(() => {
+                    resolve(cart);
+                });
             } else reject();
         });
     }

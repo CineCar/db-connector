@@ -10,22 +10,30 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
             ConnectionSingleton.getConnection().query(
                 "INSERT INTO booking (personId, cancelled) VALUES(?, ?)",
                 [booking.getPerson().getId(), booking.isCancelled()],
-                async (err, res, fields) => {
+                (err, res, fields) => {
                     if (err) reject(err);
                     else {
                         if (booking.getTickets() != null) {
-                            await booking.getTickets().forEach(async (ticket) => {
-                                await ConnectionSingleton.getConnection().query(
-                                    "UPDATE ticket SET bookingId = ? WHERE id = ?",
-                                    [booking.getId(), ticket.getId()],
-                                    (err, res, fields) => {
-                                        if (err) reject();
-                                    }
+                            const ticketPromises: Array<Promise<void>> = [];
+                            booking.getTickets().forEach((ticket) => {
+                                ticketPromises.push(
+                                    new Promise((resolve, reject) => {
+                                        ConnectionSingleton.getConnection().query(
+                                            "UPDATE ticket SET bookingId = ? WHERE id = ?",
+                                            [booking.getId(), ticket.getId()],
+                                            (err, res, fields) => {
+                                                if (err) reject();
+                                                else resolve();
+                                            }
+                                        );
+                                    })
                                 );
                             });
-                        }
 
-                        resolve(booking);
+                            Promise.all(ticketPromises).then(() => {
+                                resolve(booking);
+                            });
+                        } else resolve(booking);
                     }
                 }
             );
