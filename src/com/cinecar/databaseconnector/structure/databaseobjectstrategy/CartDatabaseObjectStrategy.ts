@@ -28,7 +28,7 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
                     promises.push(
                         new Promise((resolve, reject) => {
                             ConnectionSingleton.getConnection().query(
-                                "INSERT INTO ticket_to_cart (ticketId, cartId)",
+                                "INSERT INTO ticket_to_cart (ticketId, cartId) VALUES(?, ?)",
                                 [ticket.getId(), cart.getId()],
                                 (err, res, fields) => {
                                     if (err) reject(err);
