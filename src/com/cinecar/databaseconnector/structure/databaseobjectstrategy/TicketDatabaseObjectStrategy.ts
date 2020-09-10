@@ -14,8 +14,7 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
                 (err, res, fields) => {
                     if (err) reject(err);
                     else {
-                        ticket.setId(res.insertId);
-                        resolve(ticket);
+                        return this.get(res.insertId);
                     }
                 }
             );
