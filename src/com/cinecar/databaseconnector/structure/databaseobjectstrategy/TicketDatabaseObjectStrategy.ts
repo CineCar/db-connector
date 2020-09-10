@@ -14,7 +14,9 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
                 (err, res, fields) => {
                     if (err) reject(err);
                     else {
-                        return this.get(res.insertId);
+                        this.get(res.insertId).then((ticket: Ticket) => {
+                            resolve(ticket);
+                        });
                     }
                 }
             );
@@ -80,6 +82,7 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
                         ticket.setId(row.id);
                         ticket.setRow(row.row);
+                        ticket.setMovieScreening(movieScreening);
 
                         resolve(ticket);
                     }

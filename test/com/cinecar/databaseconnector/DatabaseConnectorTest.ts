@@ -11,8 +11,8 @@ function test() {
 
     DatabaseConnectorImplementation.getSingleton()
         .create(ticket, DatabaseObjectType.Ticket)
-        .then((obj) => {
-            console.log(obj);
+        .then((obj: Ticket) => {
+            console.log(obj.getMovieScreening().getMovie());
         })
         .catch((err) => {
             console.log(err);
