@@ -5,7 +5,7 @@ const databaseConnector = DatabaseConnectorImplementation.getSingleton();
 
 async function test() {
     databaseConnector
-        .getAll(DatabaseObjectType.Movie)
+        .get(1, DatabaseObjectType.Cart)
         .then((movies: Array<Movie>) => {
             console.log(movies);
         })
