@@ -24,24 +24,30 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
             if (cart.getTickets() != null) {
                 const promises: Array<Promise<void>> = [];
 
-                cart.getTickets().forEach((ticket) => {
-                    promises.push(
-                        new Promise((resolve, reject) => {
-                            ConnectionSingleton.getConnection().query(
-                                "INSERT INTO ticket_to_cart (ticketId, cartId) VALUES(?, ?)",
-                                [ticket.getId(), cart.getId()],
-                                (err, res, fields) => {
-                                    if (err) reject(err);
-                                    else resolve();
-                                }
+                ConnectionSingleton.getConnection().query(
+                    "DELETE FROM ticket_to_cart WHERE cartId = ?",
+                    [cart.getId()],
+                    (err, res, fields) => {
+                        cart.getTickets().forEach((ticket) => {
+                            promises.push(
+                                new Promise((resolve, reject) => {
+                                    ConnectionSingleton.getConnection().query(
+                                        "INSERT INTO ticket_to_cart (ticketId, cartId) VALUES(?, ?)",
+                                        [ticket.getId(), cart.getId()],
+                                        (err, res, fields) => {
+                                            if (err) reject(err);
+                                            else resolve();
+                                        }
+                                    );
+                                })
                             );
-                        })
-                    );
-                });
+                        });
 
-                Promise.all(promises).then(() => {
-                    resolve(cart);
-                });
+                        Promise.all(promises).then(() => {
+                            resolve(cart);
+                        });
+                    }
+                );
             } else reject();
         });
     }
