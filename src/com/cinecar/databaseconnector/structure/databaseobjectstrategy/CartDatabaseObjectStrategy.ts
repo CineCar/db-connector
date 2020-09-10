@@ -6,7 +6,7 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
     public create(object: object): Promise<object> {
         const cart: Cart = <Cart>object;
 
-        return new Promise((reject, resolve) => {
+        return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query("INSERT INTO cart (id) VALUES(NULL)", (err, res, fields) => {
                 if (err) reject(err);
                 else {
@@ -20,7 +20,7 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
     public update(object: object): Promise<object> {
         const cart: Cart = <Cart>object;
 
-        return new Promise((reject, resolve) => {
+        return new Promise((resolve, reject) => {
             if (cart.getTickets() != null) {
                 cart.getTickets().forEach(async (ticket) => {
                     await ConnectionSingleton.getConnection().query(
@@ -38,7 +38,7 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
     }
 
     public delete(id: number): Promise<void> {
-        return new Promise((reject, resolve) => {
+        return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query("DELETE FROM cart WHERE id = ?", [id], (err, res, fields) => {
                 if (err) reject(err);
                 else resolve();
