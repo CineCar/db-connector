@@ -7,13 +7,17 @@ export class MovieScreeningDatabaseObjectStrategy implements DatabaseObjectStrat
         const movieScreening: MovieScreening = <MovieScreening>object;
 
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("INSERT INTO movieScreening (movieId, datetime) VALUES(?, ?)", [movieScreening.getMovie().getId(), movieScreening.getDatetime()], (err, res, fields) => {
-                if (err) reject(err);
-                else {
-                    movieScreening.setId(res.insertId);
-                    resolve(movieScreening);
+            ConnectionSingleton.getConnection().query(
+                "INSERT INTO movieScreening (movieId, datetime) VALUES(?, ?)",
+                [movieScreening.getMovie().getId(), movieScreening.getDatetime()],
+                (err, res, fields) => {
+                    if (err) reject(err);
+                    else {
+                        movieScreening.setId(res.insertId);
+                        resolve(movieScreening);
+                    }
                 }
-            });
+            );
         });
     }
 
@@ -21,69 +25,88 @@ export class MovieScreeningDatabaseObjectStrategy implements DatabaseObjectStrat
         const movieScreening: MovieScreening = <MovieScreening>object;
 
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("UPDATE movieScreening SET datetime = ? WHERE id = ?", [movieScreening.getDatetime(), movieScreening.getId()], (err, res, fields) => {
-                if (err) reject(err);
-                else resolve(movieScreening);
-            });
+            ConnectionSingleton.getConnection().query(
+                "UPDATE movieScreening SET datetime = ? WHERE id = ?",
+                [movieScreening.getDatetime(), movieScreening.getId()],
+                (err, res, fields) => {
+                    if (err) reject(err);
+                    else resolve(movieScreening);
+                }
+            );
         });
     }
 
     public delete(id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("DELETE FROM movieScreening WHERE id = ?", [id], (err, res, fields) => {
-                if (err) reject(err);
-                else resolve();
-            });
+            ConnectionSingleton.getConnection().query(
+                "DELETE FROM movieScreening WHERE id = ?",
+                [id],
+                (err, res, fields) => {
+                    if (err) reject(err);
+                    else resolve();
+                }
+            );
         });
     }
 
     public get(id: number): Promise<object> {
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("SELECT ms.id AS id, datetime, movieId, name, duration FROM movieScreening ms INNER JOIN movie m ON ms.movieId = m.id WHERE ms.id = ?", [id], (err, res, fields) => {
-                if (err || res.length == 0) reject(err);
-                else {
-                    const movieScreening: MovieScreening = new MovieScreening();
-                    movieScreening.setId(res[0].id);
-                    movieScreening.setDatetime(new Date(res[0].datetime));
+            ConnectionSingleton.getConnection().query(
+                "SELECT ms.id AS id, datetime, movieId, name, duration, price, imageUrl FROM movieScreening ms INNER JOIN movie m ON ms.movieId = m.id WHERE ms.id = ?",
+                [id],
+                (err, res, fields) => {
+                    if (err || res.length == 0) reject(err);
+                    else {
+                        const movieScreening: MovieScreening = new MovieScreening();
+                        movieScreening.setId(res[0].id);
+                        movieScreening.setDatetime(new Date(res[0].datetime));
 
-                    const movie: Movie = new Movie();
-                    movie.setId(res[0].movieId);
-                    movie.setName(res[0].name);
-                    movie.setDuration(res[0].duration);
+                        const movie: Movie = new Movie();
+                        movie.setId(res[0].movieId);
+                        movie.setName(res[0].name);
+                        movie.setDuration(res[0].duration);
+                        movie.setPrice(res[0].price);
+                        movie.setImageUrl(res[0].imageUrl);
 
-                    movieScreening.setMovie(movie);
+                        movieScreening.setMovie(movie);
 
-                    resolve(movieScreening);
+                        resolve(movieScreening);
+                    }
                 }
-            });
+            );
         });
     }
 
     public getAll(): Promise<object[]> {
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("SELECT ms.id AS id, datetime, movieId, name, duration FROM movieScreening ms INNER JOIN movie m ON ms.movieId = m.id", (err, res, fields) => {
-                if (err) reject(err);
-                else {
-                    const movieScreenings: Array<MovieScreening> = [];
+            ConnectionSingleton.getConnection().query(
+                "SELECT ms.id AS id, datetime, movieId, name, duration, price, imageUrl FROM movieScreening ms INNER JOIN movie m ON ms.movieId = m.id",
+                (err, res, fields) => {
+                    if (err) reject(err);
+                    else {
+                        const movieScreenings: Array<MovieScreening> = [];
 
-                    res.forEach((row) => {
-                        const movieScreening: MovieScreening = new MovieScreening();
-                        movieScreening.setId(row.id);
-                        movieScreening.setDatetime(new Date(row.datetime));
+                        res.forEach((row) => {
+                            const movieScreening: MovieScreening = new MovieScreening();
+                            movieScreening.setId(row.id);
+                            movieScreening.setDatetime(new Date(row.datetime));
 
-                        const movie: Movie = new Movie();
-                        movie.setId(row.movieId);
-                        movie.setName(row.name);
-                        movie.setDuration(row.duration);
+                            const movie: Movie = new Movie();
+                            movie.setId(row.movieId);
+                            movie.setName(row.name);
+                            movie.setDuration(row.duration);
+                            movie.setPrice(row.price);
+                            movie.setImageUrl(row.imageUrl);
 
-                        movieScreening.setMovie(movie);
+                            movieScreening.setMovie(movie);
 
-                        movieScreenings.push(movieScreening);
-                    });
+                            movieScreenings.push(movieScreening);
+                        });
 
-                    resolve(movieScreenings);
+                        resolve(movieScreenings);
+                    }
                 }
-            });
+            );
         });
     }
 }

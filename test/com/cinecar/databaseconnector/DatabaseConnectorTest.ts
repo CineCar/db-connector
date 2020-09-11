@@ -6,7 +6,6 @@ function test() {
 
     const ticket: Ticket = new Ticket();
     movieScreening.setId(1);
-    ticket.setRow(1);
     ticket.setMovieScreening(movieScreening);
 
     DatabaseConnectorImplementation.getSingleton()

@@ -8,8 +8,8 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query(
-                "INSERT INTO movie (name, duration) VALUES(?, ?)",
-                [movie.getName(), movie.getDuration()],
+                "INSERT INTO movie (name, duration, price, imageUrl) VALUES(?, ?, ?, ?)",
+                [movie.getName(), movie.getDuration(), movie.getPrice(), movie.getImageUrl()],
                 (err, res, fields) => {
                     if (err) reject(err);
                     else {
@@ -26,8 +26,8 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query(
-                "UPDATE movie SET name = ??, duration = ? WHERE id = ?",
-                [movie.getName(), movie.getDuration(), movie.getId()],
+                "UPDATE movie SET name = ?, duration = ?, price = ?, imageUrl = ? WHERE id = ?",
+                [movie.getName(), movie.getDuration(), movie.getId(), movie.getPrice(), movie.getImageUrl()],
                 (err, res, fields) => {
                     if (err) reject(err);
                     else resolve(movie);
@@ -48,7 +48,7 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
     public get(id: number): Promise<object> {
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query(
-                "SELECT id, name, duration FROM movie WHERE id = ?",
+                "SELECT id, name, duration, price, imageUrl FROM movie WHERE id = ?",
                 [id],
                 (err, res, fields) => {
                     if (err || res.length == 0) reject(err);
@@ -57,6 +57,8 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
                         movie.setId(id);
                         movie.setName(res[0].name);
                         movie.setDuration(res[0].duration);
+                        movie.setPrice(res[0].price);
+                        movie.setImageUrl(res[0].imageUrl);
 
                         ConnectionSingleton.getConnection().query(
                             "SELECT id, datetime FROM movieScreening WHERE movieId = ?",
@@ -90,55 +92,60 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
         const movies: Array<Movie> = [];
 
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("SELECT id, name, duration FROM movie", (err, res, fields) => {
-                if (err) reject(err);
-                else {
-                    const promises: Array<Promise<Movie>> = [];
+            ConnectionSingleton.getConnection().query(
+                "SELECT id, name, duration, price, imageUrl FROM movie",
+                (err, res, fields) => {
+                    if (err) reject(err);
+                    else {
+                        const promises: Array<Promise<Movie>> = [];
 
-                    res.forEach((row) => {
-                        promises.push(
-                            new Promise((resolve, reject) => {
-                                const movie: Movie = new Movie();
+                        res.forEach((row) => {
+                            promises.push(
+                                new Promise((resolve, reject) => {
+                                    const movie: Movie = new Movie();
 
-                                movie.setId(row.id);
-                                movie.setName(row.name);
-                                movie.setDuration(row.duration);
+                                    movie.setId(row.id);
+                                    movie.setName(row.name);
+                                    movie.setDuration(row.duration);
+                                    movie.setImageUrl(row.imageUrl);
+                                    movie.setPrice(row.price);
 
-                                ConnectionSingleton.getConnection().query(
-                                    "SELECT id, datetime FROM movieScreening WHERE movieId = ?",
-                                    [movie.getId()],
-                                    (err, res, fields) => {
-                                        if (err) reject(err);
-                                        else {
-                                            const movieScreenings: Array<MovieScreening> = [];
+                                    ConnectionSingleton.getConnection().query(
+                                        "SELECT id, datetime FROM movieScreening WHERE movieId = ?",
+                                        [movie.getId()],
+                                        (err, res, fields) => {
+                                            if (err) reject(err);
+                                            else {
+                                                const movieScreenings: Array<MovieScreening> = [];
 
-                                            res.forEach((row) => {
-                                                const movieScreening = new MovieScreening();
-                                                movieScreening.setId(row.id);
-                                                movieScreening.setDatetime(new Date(row.datetime));
-                                                movieScreening.setMovie(movie);
+                                                res.forEach((row) => {
+                                                    const movieScreening = new MovieScreening();
+                                                    movieScreening.setId(row.id);
+                                                    movieScreening.setDatetime(new Date(row.datetime));
+                                                    movieScreening.setMovie(movie);
 
-                                                movieScreenings.push(movieScreening);
-                                            });
+                                                    movieScreenings.push(movieScreening);
+                                                });
 
-                                            movie.setMovieScreenings(movieScreenings);
-                                            resolve(movie);
+                                                movie.setMovieScreenings(movieScreenings);
+                                                resolve(movie);
+                                            }
                                         }
-                                    }
-                                );
-                            })
-                        );
-                    });
-
-                    Promise.all(promises)
-                        .then((movies: Array<Movie>) => {
-                            resolve(movies);
-                        })
-                        .catch((err) => {
-                            reject(err);
+                                    );
+                                })
+                            );
                         });
+
+                        Promise.all(promises)
+                            .then((movies: Array<Movie>) => {
+                                resolve(movies);
+                            })
+                            .catch((err) => {
+                                reject(err);
+                            });
+                    }
                 }
-            });
+            );
         });
     }
 }

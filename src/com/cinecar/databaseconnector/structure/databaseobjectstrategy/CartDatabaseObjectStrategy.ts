@@ -74,7 +74,7 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
                         cart.setCreationDate(new Date(res[0].creationDate));
 
                         ConnectionSingleton.getConnection().query(
-                            "SELECT t.id AS id, row, movieScreeningId, datetime, movieId, name, duration, bookingId, cancelled, personId, firstname, lastname FROM ticket_to_cart ttc INNER JOIN ticket t ON ttc.ticketId = t.id INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id LEFT JOIN booking b ON t.bookingId = b.id LEFT JOIN person p ON b.personId = p.id WHERE cartId = ?",
+                            "SELECT t.id AS id, movieScreeningId, datetime, movieId, name, duration, price, imageUrl, bookingId, cancelled, personId, firstname, lastname FROM ticket_to_cart ttc INNER JOIN ticket t ON ttc.ticketId = t.id INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id LEFT JOIN booking b ON t.bookingId = b.id LEFT JOIN person p ON b.personId = p.id WHERE cartId = ?",
                             [id],
                             (err, res, fields) => {
                                 if (err) reject(err);
@@ -103,11 +103,12 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
                                         movie.setId(row.movieId);
                                         movie.setDuration(row.duration);
                                         movie.setName(row.name);
+                                        movie.setImageUrl(row.imageUrl);
+                                        movie.setPrice(row.price);
 
                                         movieScreening.setMovie(movie);
 
                                         ticket.setId(row.id);
-                                        ticket.setRow(row.row);
                                         ticket.setMovieScreening(movieScreening);
 
                                         tickets.push(ticket);

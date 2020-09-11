@@ -13,6 +13,7 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
                 (err, res, fields) => {
                     if (err) reject(err);
                     else {
+                        booking.setId(res.insertId);
                         if (booking.getTickets() != null) {
                             const ticketPromises: Array<Promise<void>> = [];
                             booking.getTickets().forEach((ticket) => {
@@ -77,7 +78,7 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
                         booking.setPerson(person);
 
                         ConnectionSingleton.getConnection().query(
-                            "SELECT t.id AS id, row, movieScreeningId, movieId, datetime, name, duration FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id WHERE t.bookingId = ?",
+                            "SELECT t.id AS id, movieScreeningId, movieId, datetime, name, duration, price, imageUrl FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id WHERE t.bookingId = ?",
                             [id],
                             (err, res, fields) => {
                                 if (err) reject();
@@ -88,13 +89,14 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
                                         ticket.setId(row.id);
                                         ticket.setBooking(booking);
-                                        ticket.setRow(row.row);
                                         const movieScreening: MovieScreening = new MovieScreening();
                                         const movie: Movie = new Movie();
 
                                         movie.setId(row.movieId);
                                         movie.setDuration(row.duration);
                                         movie.setName(row.name);
+                                        movie.setPrice(row.price);
+                                        movie.setImageUrl(row.imageUrl);
 
                                         movieScreening.setMovie(movie);
                                         movieScreening.setDatetime(new Date(row.datetime));
@@ -139,7 +141,7 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
                                     booking.setPerson(person);
 
                                     ConnectionSingleton.getConnection().query(
-                                        "SELECT t.id AS id, row, movieScreeningId, movieId, datetime, name, duration FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id WHERE t.bookingId = ?",
+                                        "SELECT t.id AS id, movieScreeningId, movieId, datetime, name, duration, price, imageUrl FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id WHERE t.bookingId = ?",
                                         [booking.getId()],
                                         (err, res, fields) => {
                                             if (err) reject();
@@ -151,13 +153,14 @@ export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
                                                     ticket.setId(row.id);
                                                     ticket.setBooking(booking);
-                                                    ticket.setRow(row.row);
                                                     const movieScreening: MovieScreening = new MovieScreening();
                                                     const movie: Movie = new Movie();
 
                                                     movie.setId(row.movieId);
                                                     movie.setDuration(row.duration);
                                                     movie.setName(row.name);
+                                                    movie.setPrice(row.price);
+                                                    movie.setImageUrl(row.imageUrl);
 
                                                     movieScreening.setMovie(movie);
                                                     movieScreening.setDatetime(new Date(row.datetime));

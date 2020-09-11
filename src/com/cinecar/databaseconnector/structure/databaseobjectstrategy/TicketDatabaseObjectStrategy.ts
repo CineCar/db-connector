@@ -1,16 +1,14 @@
 import { DatabaseObjectStrategy } from "../DatabaseObjectStrategy";
 import { Ticket, Booking, Person, MovieScreening, Movie } from "com.cinecar.objects";
 import { ConnectionSingleton } from "../ConnectionSingleton";
-import { resolve } from "path";
-
 export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
     public create(object: object): Promise<object> {
         const ticket: Ticket = <Ticket>object;
 
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query(
-                "INSERT INTO ticket (movieScreeningId, row) VALUES(?, ?)",
-                [ticket.getMovieScreening().getId(), ticket.getRow()],
+                "INSERT INTO ticket (movieScreeningId) VALUES(?)",
+                [ticket.getMovieScreening().getId()],
                 (err, res, fields) => {
                     if (err) reject(err);
                     else {
@@ -24,18 +22,7 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
     }
 
     public update(object: object): Promise<object> {
-        const ticket: Ticket = <Ticket>object;
-
-        return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query(
-                "UPDATE ticket SET row = ? WHERE id = ?",
-                [ticket.getRow(), ticket.getId()],
-                (err, res, fields) => {
-                    if (err) reject(err);
-                    else resolve(ticket);
-                }
-            );
-        });
+        throw new Error("Not applicable");
     }
 
     public delete(id: number): Promise<void> {
@@ -50,7 +37,7 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
     public get(id: number): Promise<object> {
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query(
-                "SELECT t.id AS id, row, movieScreeningId, datetime, movieId, name, duration, bookingId, cancelled, personId, firstname, lastname FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id LEFT JOIN booking b ON t.bookingId = b.id LEFT JOIN person p ON b.personId = p.id WHERE t.id = ?",
+                "SELECT t.id AS id, movieScreeningId, datetime, movieId, name, duration, price, imageUrl, bookingId, cancelled, personId, firstname, lastname FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id LEFT JOIN booking b ON t.bookingId = b.id LEFT JOIN person p ON b.personId = p.id WHERE t.id = ?",
                 [id],
                 (err, res, fields) => {
                     if (err || res.length == 0) reject(err);
@@ -77,11 +64,12 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
                         movie.setId(row.movieId);
                         movie.setDuration(row.duration);
                         movie.setName(row.name);
+                        movie.setPrice(row.price);
+                        movie.setImageUrl(row.imageUrl);
 
                         movieScreening.setMovie(movie);
 
                         ticket.setId(row.id);
-                        ticket.setRow(row.row);
                         ticket.setMovieScreening(movieScreening);
 
                         resolve(ticket);
@@ -94,7 +82,7 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
     public getAll(): Promise<object[]> {
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query(
-                "SELECT t.id AS id, row, movieScreeningId, datetime, movieId, name, duration, bookingId, cancelled, personId, firstname, lastname FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id LEFT JOIN booking b ON t.bookingId = b.id LEFT JOIN person p ON b.personId = p.id",
+                "SELECT t.id AS id, movieScreeningId, datetime, movieId, name, duration, price, imageUrl, bookingId, cancelled, personId, firstname, lastname FROM ticket t INNER JOIN movieScreening ms ON t.movieScreeningId = ms.id INNER JOIN movie m ON ms.movieId = m.id LEFT JOIN booking b ON t.bookingId = b.id LEFT JOIN person p ON b.personId = p.id",
                 (err, res, fields) => {
                     if (err) reject(err);
                     else {
@@ -121,11 +109,12 @@ export class TicketDatabaseObjectStrategy implements DatabaseObjectStrategy {
                             movie.setId(row.movieId);
                             movie.setDuration(row.duration);
                             movie.setName(row.name);
+                            movie.setPrice(row.price);
+                            movie.setImageUrl(row.imageUrl);
 
                             movieScreening.setMovie(movie);
 
                             ticket.setId(row.id);
-                            ticket.setRow(row.row);
 
                             tickets.push(ticket);
                         });
