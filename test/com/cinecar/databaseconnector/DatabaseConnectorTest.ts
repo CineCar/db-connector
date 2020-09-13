@@ -1,17 +1,14 @@
 import { DatabaseConnectorImplementation, DatabaseObjectType } from "../../../../src/index";
-import { Movie, MovieScreening, Ticket } from "com.cinecar.objects";
+import { Cart } from "com.cinecar.objects";
 
 function test() {
-    const movieScreening = new MovieScreening();
-
-    const ticket: Ticket = new Ticket();
-    movieScreening.setId(1);
-    ticket.setMovieScreening(movieScreening);
+    const cart: Cart = new Cart();
+    cart.setCreationDate(new Date());
 
     DatabaseConnectorImplementation.getSingleton()
-        .create(ticket, DatabaseObjectType.Ticket)
-        .then((obj: Ticket) => {
-            console.log(obj.getMovieScreening().getMovie());
+        .create(cart, DatabaseObjectType.Cart)
+        .then((obj: Cart) => {
+            console.log(obj);
         })
         .catch((err) => {
             console.log(err);

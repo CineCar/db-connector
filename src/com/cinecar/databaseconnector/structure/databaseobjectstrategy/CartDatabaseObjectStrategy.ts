@@ -7,13 +7,17 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
         const cart: Cart = <Cart>object;
 
         return new Promise((resolve, reject) => {
-            ConnectionSingleton.getConnection().query("INSERT INTO cart (id) VALUES(NULL)", (err, res, fields) => {
-                if (err) reject(err);
-                else {
-                    cart.setId(res.insertId);
-                    resolve(cart);
+            ConnectionSingleton.getConnection().query(
+                "INSERT INTO cart (creationDate) VALUES(?)",
+                [cart.getCreationDate()],
+                (err, res, fields) => {
+                    if (err) reject(err);
+                    else {
+                        cart.setId(res.insertId);
+                        resolve(cart);
+                    }
                 }
-            });
+            );
         });
     }
 
