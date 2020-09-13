@@ -87,17 +87,20 @@ export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
 
                                     res.forEach((row) => {
                                         const ticket: Ticket = new Ticket();
-                                        const booking: Booking = new Booking();
-                                        booking.setId(row.bookingId);
-                                        booking.setCancelled(row.cancelled);
 
-                                        const person: Person = new Person();
-                                        person.setId(row.personId);
-                                        person.setFirstname(row.firstname);
-                                        person.setLastname(row.lastname);
+                                        if (row.bookingId != null) {
+                                            const booking: Booking = new Booking();
+                                            booking.setId(row.bookingId);
+                                            booking.setCancelled(row.cancelled);
 
-                                        booking.setPerson(person);
-                                        ticket.setBooking(booking);
+                                            const person: Person = new Person();
+                                            person.setId(row.personId);
+                                            person.setFirstname(row.firstname);
+                                            person.setLastname(row.lastname);
+
+                                            booking.setPerson(person);
+                                            ticket.setBooking(booking);
+                                        }
 
                                         const movieScreening: MovieScreening = new MovieScreening();
                                         movieScreening.setDatetime(new Date(row.datetime));
