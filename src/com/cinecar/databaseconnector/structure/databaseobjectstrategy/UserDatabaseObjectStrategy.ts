@@ -3,6 +3,14 @@ import { ConnectionSingleton } from "../ConnectionSingleton";
 import { User } from "com.cinecar.objects";
 
 export class UserDatabaseObjectStrategy implements DatabaseObjectStrategy {
+    search(attribute: string, query: string): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+
+    filter(attribute: string, start: any, end: any): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+
     create(object: object): Promise<object> {
         throw new Error("Method not implemented.");
     }

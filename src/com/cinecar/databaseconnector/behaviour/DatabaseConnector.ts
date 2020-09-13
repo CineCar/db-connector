@@ -6,4 +6,6 @@ export interface DatabaseConnector {
     delete(id: number, type: DatabaseObjectType): Promise<void>;
     get(id: number, type: DatabaseObjectType): Promise<object>;
     getAll(type: DatabaseObjectType): Promise<Array<object>>;
+    search(attribute: string, query: string, type: DatabaseObjectType): Promise<Array<object>>;
+    filter(attribute: string, start: any, end: any, type: DatabaseObjectType): Promise<Array<object>>;
 }

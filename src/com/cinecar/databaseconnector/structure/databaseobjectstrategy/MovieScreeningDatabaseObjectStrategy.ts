@@ -3,6 +3,44 @@ import { ConnectionSingleton } from "./../ConnectionSingleton";
 import { Movie, MovieScreening } from "com.cinecar.objects";
 
 export class MovieScreeningDatabaseObjectStrategy implements DatabaseObjectStrategy {
+    search(attribute: string, query: string): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+
+    filter(attribute: string, start: any, end: any): Promise<Array<object>> {
+        return new Promise((resolve, reject) => {
+            ConnectionSingleton.getConnection().query(
+                "SELECT ms.id AS id, datetime, movieId, name, duration, price, imageUrl FROM movieScreening ms INNER JOIN movie m ON ms.movieId = m.id WHERE ?? <= ? AND ?? >= ?",
+                [attribute, end, attribute, start],
+                (err, res, fields) => {
+                    if (err) reject(err);
+                    else {
+                        const movieScreenings: Array<MovieScreening> = [];
+
+                        res.forEach((row) => {
+                            const movieScreening: MovieScreening = new MovieScreening();
+                            movieScreening.setId(row.id);
+                            movieScreening.setDatetime(new Date(row.datetime));
+
+                            const movie: Movie = new Movie();
+                            movie.setId(row.movieId);
+                            movie.setName(row.name);
+                            movie.setDuration(row.duration);
+                            movie.setPrice(row.price);
+                            movie.setImageUrl(row.imageUrl);
+
+                            movieScreening.setMovie(movie);
+
+                            movieScreenings.push(movieScreening);
+                        });
+
+                        resolve(movieScreenings);
+                    }
+                }
+            );
+        });
+    }
+
     public create(object: object): Promise<object> {
         const movieScreening: MovieScreening = <MovieScreening>object;
 

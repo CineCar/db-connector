@@ -3,6 +3,14 @@ import { Booking, Person, Ticket, MovieScreening, Movie } from "com.cinecar.obje
 import { ConnectionSingleton } from "../ConnectionSingleton";
 
 export class BookingDatabaseObjectStrategy implements DatabaseObjectStrategy {
+    search(attribute: string, query: string): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+
+    filter(attribute: string, start: any, end: any): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+
     public create(object: object): Promise<object> {
         const booking: Booking = <Booking>object;
 

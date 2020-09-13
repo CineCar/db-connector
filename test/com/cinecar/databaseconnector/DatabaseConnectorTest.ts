@@ -1,13 +1,12 @@
 import { DatabaseConnectorImplementation, DatabaseObjectType } from "../../../../src/index";
-import { Cart } from "com.cinecar.objects";
+import { Movie } from "com.cinecar.objects";
 
 function test() {
-    const cart: Cart = new Cart();
-    cart.setCreationDate(new Date());
-
+    let future = new Date();
+    future.setDate(30);
     DatabaseConnectorImplementation.getSingleton()
-        .create(cart, DatabaseObjectType.Cart)
-        .then((obj: Cart) => {
+        .filter("datetime", new Date(), future, DatabaseObjectType.MovieScreening)
+        .then((obj) => {
             console.log(obj);
         })
         .catch((err) => {

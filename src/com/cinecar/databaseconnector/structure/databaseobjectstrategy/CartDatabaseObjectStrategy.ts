@@ -3,6 +3,13 @@ import { ConnectionSingleton } from "../ConnectionSingleton";
 import { Cart, Person, Ticket, Booking, MovieScreening, Movie } from "com.cinecar.objects";
 
 export class CartDatabaseObjectStrategy implements DatabaseObjectStrategy {
+    search(attribute: string, query: string): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+    filter(attribute: string, start: any, end: any): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+
     public create(object: object): Promise<object> {
         const cart: Cart = <Cart>object;
 

@@ -3,6 +3,14 @@ import { ConnectionSingleton } from "../ConnectionSingleton";
 import { Session, User } from "com.cinecar.objects";
 
 export class SessionDatabaseObjectStrategy implements DatabaseObjectStrategy {
+    search(attribute: string, query: string): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+
+    filter(attribute: string, start: any, end: any): Promise<Array<object>> {
+        throw new Error("Method not implemented.");
+    }
+
     create(object: object): Promise<object> {
         const session: Session = <Session>object;
 

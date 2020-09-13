@@ -32,4 +32,12 @@ export class DatabaseConnectorImplementation implements DatabaseConnector {
     public getAll(type: DatabaseObjectType): Promise<object[]> {
         return DatabaseObjectStrategyFactory.create(type).getAll();
     }
+
+    public search(attribute: string, query: string, type: DatabaseObjectType): Promise<Array<object>> {
+        return DatabaseObjectStrategyFactory.create(type).search(attribute, query);
+    }
+
+    public filter(attribute: string, start: any, end: any, type: DatabaseObjectType): Promise<Array<object>> {
+        return DatabaseObjectStrategyFactory.create(type).filter(attribute, start, end);
+    }
 }
