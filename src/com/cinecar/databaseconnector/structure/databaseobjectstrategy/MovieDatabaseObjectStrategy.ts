@@ -91,7 +91,7 @@ export class MovieDatabaseObjectStrategy implements DatabaseObjectStrategy {
         return new Promise((resolve, reject) => {
             ConnectionSingleton.getConnection().query(
                 "UPDATE movie SET name = ?, duration = ?, price = ?, imageUrl = ? WHERE id = ?",
-                [movie.getName(), movie.getDuration(), movie.getId(), movie.getPrice(), movie.getImageUrl()],
+                [movie.getName(), movie.getDuration(), movie.getPrice(), movie.getImageUrl(), movie.getId()],
                 (err, res, fields) => {
                     if (err) reject(err);
                     else resolve(movie);
